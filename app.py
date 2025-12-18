@@ -17,13 +17,14 @@ status = {
     "last": ""
 }
 
-def random_4_digits():
-    return str(random.randint(0, 9999)).zfill(4)
+def random_digits():
+    length = random.choice([4, 5])
+    return str(random.randint(0, 10**length - 1)).zfill(length)
 
 def scanner():
     global running
     while running:
-        code = random_4_digits()
+        code = random_digits()
         if code in checked:
             continue
 
@@ -34,16 +35,16 @@ def scanner():
         status["last"] = url
 
         try:
-            # If this does NOT throw an error → we treat it as working
-            requests.get(url, headers=HEADERS, timeout=6)
+            r = requests.get(url, headers=HEADERS, timeout=8)
 
-            # Immediately list it
-            working.append(url)
+            # VERY LOOSE RULE:
+            if r.status_code == 200:
+                working.append(url)
 
         except:
             pass
 
-        time.sleep(0.8)
+        time.sleep(1)
 
 @app.route("/")
 def index():
@@ -52,7 +53,7 @@ def index():
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>SHEIN Checker</title>
+<title>SHEIN Scanner</title>
 <style>
 body { font-family: Arial; background:#0f172a; color:#e5e7eb; padding:20px; }
 button { padding:12px; width:100%; border:none; border-radius:8px; font-weight:bold; margin-bottom:10px; }
@@ -65,7 +66,7 @@ li { font-size:14px; margin-bottom:6px; }
 </head>
 <body>
 
-<h2>🔎 SHEIN 4-Digit Link Checker</h2>
+<h2>🔎 SHEIN Link Checker (Real-Time)</h2>
 <p>Base: https://m.shein.com/ph/ark/0000</p>
 
 <button class="start" onclick="fetch('/start')">▶ Start</button>
@@ -77,7 +78,7 @@ li { font-size:14px; margin-bottom:6px; }
   <div style="font-size:12px;"><b>Last checked:</b><br><span id="last">—</span></div>
 </div>
 
-<h3>✅ Links That Responded</h3>
+<h3>✅ Links That Loaded</h3>
 <ul id="results"></ul>
 
 <script>
@@ -98,7 +99,7 @@ function update(){
     });
   });
 }
-setInterval(update, 1200);
+setInterval(update, 1500);
 </script>
 
 </body>
