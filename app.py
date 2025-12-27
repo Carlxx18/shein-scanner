@@ -17,9 +17,11 @@ status = {
     "last": ""
 }
 
+MIN_ARK = 1000
+MAX_ARK = 20000
+
 def random_digits():
-    length = random.choice([4, 5])
-    return str(random.randint(0, 10**length - 1)).zfill(length)
+    return str(random.randint(MIN_ARK, MAX_ARK))
 
 def scanner():
     global running
@@ -131,3 +133,4 @@ def stat():
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
+
